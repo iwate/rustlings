@@ -14,32 +14,52 @@
 
 // Execute `rustlings hint quiz3` or use the `hint` watch subcommand for a hint.
 
-// I AM NOT DONE
+use std::fmt;
+use std::fmt::Display;
 
-pub struct ReportCard {
-    pub grade: f32,
+pub enum Grade<'a> {
+    Numeric(f32),
+    Alphabetical(&'a str),
+}
+
+impl<'a> Display for Grade<'a> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let str = match self {
+            Grade::Numeric(x) => x.to_string(),
+            Grade::Alphabetical(s) => s.to_string(),
+        };
+        write!(f, "{}", str)
+    }
+}
+
+pub struct ReportCard<'a> {
+    pub grade: Grade<'a>,
     pub student_name: String,
     pub student_age: u8,
 }
 
-impl ReportCard {
+impl<'a> ReportCard<'a> {
     pub fn print(&self) -> String {
-        format!("{} ({}) - achieved a grade of {}",
-            &self.student_name, &self.student_age, &self.grade)
+        //println!("{}", self.grade);
+        format!(
+            "{} ({}) - achieved a grade of {}",
+            &self.student_name, &self.student_age, self.grade
+        )
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-
     #[test]
     fn generate_numeric_report_card() {
+        println!("num");
         let report_card = ReportCard {
-            grade: 2.1,
+            grade: Grade::Numeric(2.1),
             student_name: "Tom Wriggle".to_string(),
             student_age: 12,
         };
+        let _ = report_card.print();
         assert_eq!(
             report_card.print(),
             "Tom Wriggle (12) - achieved a grade of 2.1"
@@ -50,7 +70,7 @@ mod tests {
     fn generate_alphabetic_report_card() {
         // TODO: Make sure to change the grade here after you finish the exercise.
         let report_card = ReportCard {
-            grade: 2.1,
+            grade: Grade::Alphabetical("A+"),
             student_name: "Gary Plotter".to_string(),
             student_age: 11,
         };
